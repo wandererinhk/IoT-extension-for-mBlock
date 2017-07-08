@@ -2,6 +2,7 @@
 	"description":"IoT extension for Me WIFI Module",
 	"version":"1.0",
 	"author":"Just A HK Guy(justahkguy@gmail.com)",
+	"homepage":"https://github.com/wandererinhk/IoT-extension-for-mBlock",
 	"extensionPort": 0,
 	"extensionHost": "127.0.0.1",
 	"sort":7,
