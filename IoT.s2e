@@ -6,7 +6,6 @@
 	"extensionPort": 0,
 	"extensionHost": "127.0.0.1",
 	"sort":7,
-	"javascriptURL":"js/IoT.js",
 	"blockSpecs": [
 		
 		["w", 
