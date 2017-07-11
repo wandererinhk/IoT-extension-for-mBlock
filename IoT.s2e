@@ -37,8 +37,8 @@
 		["b", 
 		"Connect AP|SSID %s |PW %s",
 		"Connect AP",
-		"SSID\\",
-		"Password\\",
+		"SSID",
+		"Password",
 		{
 		"setup":"Wifi.begin(9600);\n",
 		"inc":"#include <String.h>\n",
