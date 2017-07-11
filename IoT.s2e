@@ -5,7 +5,7 @@
 	"homepage":"https://github.com/wandererinhk/IoT-extension-for-mBlock",
 	"extensionPort": 0,
 	"extensionHost": "127.0.0.1",
-	"sort":7,
+	"sort":0,
 	"blockSpecs": [
 		
 		["w", 
@@ -42,8 +42,8 @@
 		{
 		"setup":"Wifi.begin(9600);\n",
 		"inc":"#include <String.h>\n",
-		"def":"bool ConnectAP(){Wifi.println(F(\"AT+RST\"));delay(2000);Wifi.println(F(\"ATE0\"));Wifi.println(F(\"AT+CWMODE=1\"));Wifi.println(F(\"AT+CIPMUX=1\"));Wifi.println(F(\"AT+CWQAP\"));Wifi.setTimeout(16000);while(Wifi.available()){delayMicroseconds(500);Wifi.read();}Wifi.println(\"AT+CWJAP=\\{0}+\\{1}\");if (Wifi.find(\"OK\"))return true;else return false;};\n",
-		"work":"ConnectAP()",
+		"def":"bool ConnectAP(const String& SSID, const String& PW){Wifi.println(F(\"AT+RST\"));delay(2000);Wifi.println(F(\"ATE0\"));Wifi.println(F(\"AT+CWMODE=1\"));Wifi.println(F(\"AT+CIPMUX=1\"));Wifi.println(F(\"AT+CWQAP\"));Wifi.setTimeout(16000);while(Wifi.available()){delayMicroseconds(500);Wifi.read();}String JAP;JAP= F(\"AT+CWJAP=\\\"\");JAP.concat(SSID);JAP.concat(F(\"\\\"+\\\"\"));JAP.concat(PW);JAP.concat(\"\\\"\");Wifi.println(JAP);if (Wifi.find(\"OK\"))return true;else return false;};\n",
+		"work":"ConnectAP((String){0}, (String){1})",
 		"loop":""
 		}
 		],
