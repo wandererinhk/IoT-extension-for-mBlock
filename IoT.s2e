@@ -56,8 +56,8 @@
 		{
 		"setup":"Wifi.begin(9600);\n",
 		"inc":"#include <String.h>\n",
-		"def":"bool upLoadToThingspeak(const String& API, const String& CONTENT){Wifi.setTimeout(5000);while(Wifi.available()){delayMicroseconds(500);Wifi.read();}String Request;Request.reserve(16);String SendOut;SendOut.reserve(150);SendOut= F(\"GET https://api.thingspeak.com/update?api_key=\");SendOut.concat(API);SendOut.concat(F(\"&\"));SendOut.concat(CONTENT);Request=F(\"AT+CIPSEND=0,\");Request.concat(SendOut.length()+2);Wifi.println(F(\"AT+CIPSTART=0,\\\"TCP\\\",\\\"api.thingspeak.com\\\",80\"));if(Wifi.find(\"OK\\r\\n\")){Wifi.println(Request);if(Wifi.find(\">\")){Wifi.println(SendOut);if (Wifi.find(\"+IPD\"))return true;else {Wifi.println(F(\"AT+CIPCLOSE=0\"));return false;}}else{Wifi.println(F(\"AT+CIPCLOSE=0\"));return false;}}else return false;};\n",
-		"work":"upLoadToThingspeak((String){0},(String){1})",
+		"def":"bool upLoadToThingspeak(const String& CONTENT){Wifi.setTimeout(5000);while(Wifi.available()){delayMicroseconds(500);Wifi.read();}String Request;Request.reserve(16);String SendOut;SendOut.reserve(150);SendOut= F(\"GET https://api.thingspeak.com/update?api_key=\");SendOut.concat(F({0}));SendOut.concat(F(\"&\"));SendOut.concat(CONTENT);Request=F(\"AT+CIPSEND=0,\");Request.concat(SendOut.length()+2);Wifi.println(F(\"AT+CIPSTART=0,\\\"TCP\\\",\\\"api.thingspeak.com\\\",80\"));if(Wifi.find(\"OK\\r\\n\")){Wifi.println(Request);if(Wifi.find(\">\")){Wifi.println(SendOut);if (Wifi.find(\"+IPD\"))return true;else {Wifi.println(F(\"AT+CIPCLOSE=0\"));return false;}}else{Wifi.println(F(\"AT+CIPCLOSE=0\"));return false;}}else return false;};\n",
+		"work":"upLoadToThingspeak((String){1})",
 		"loop":""
 		}
 		],
