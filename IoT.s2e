@@ -1,26 +1,13 @@
 {	"extensionName": "IoT",
 	"description":"IoT extension for Me WIFI Module",
-	"version":"1.1",
+	"version":"1.2",
 	"author":"Just A HK Guy(justahkguy@gmail.com)",
 	"homepage":"https://github.com/wandererinhk/IoT-extension-for-mBlock",
 	"extensionPort": 0,
 	"extensionHost":"127.0.0.1",
 	"sort":0,
 	"blockSpecs": [
-		
-		["w", 
-		"Attach WiFi Module RX@%s TX@%s",
-		"AttachWifi",
-		"12",
-		"11",
-		{"setup":"Wifi.begin(9600);\n",
-		"inc":"",
-		"def":"SoftwareSerial Wifi({0},{1});",
-		"work":"",
-		"loop":""
-		}
-		],
-		
+			
 		["w", 
 		"[mCore]Attach WiFi Module RX@%m.mCoreRX TX@%m.mCoreTX",
 		"AttachWifi",
@@ -61,20 +48,22 @@
 		],
 		
 		["w", 
-		"WiFi.write %s",
-		"writeLine",
-		"AT",
-		{
-		"setup":"Wifi.begin(9600);\n",
+		"Attach WiFi Module RX@%s TX@%s",
+		"AttachWifi",
+		"12",
+		"11",
+		{"setup":"Wifi.begin(9600);\n",
 		"inc":"",
-		"def":"",
-		"work":"Wifi.println({0});\n",
+		"def":"SoftwareSerial Wifi({0},{1});",
+		"work":"",
 		"loop":""
 		}
 		],
 		
+		["-"],
+		
 		["b", 
-		"Connect AP|SSID %s |PW %s",
+		"[With Check]Connect AP|SSID %s |PW %s",
 		"Connect_AP",
 		"SSID",
 		"PW",
@@ -87,8 +76,24 @@
 		}
 		],
 		
+		["w", 
+		"Connect AP|SSID %s |PW %s",
+		"Connect_AP_NoCheck",
+		"SSID",
+		"PW",
+		{
+		"setup":"Wifi.begin(9600);\n",
+		"inc":"#include <String.h>\n",
+		"def":"void ConnectAPNoCheck(const String& SSID, const String& PW){Wifi.println(F(\"AT+RST\"));delay(2000);Wifi.println(F(\"ATE0\"));Wifi.println(F(\"AT+CWMODE=1\"));Wifi.println(F(\"AT+CIPMUX=1\"));Wifi.println(F(\"AT+CWQAP\"));Wifi.setTimeout(16000);while(Wifi.available()){delayMicroseconds(500);Wifi.read();}String JAP;JAP= F(\"AT+CWJAP=\\\"\");JAP.concat(SSID);JAP.concat(F(\"\\\"+\\\"\"));JAP.concat(PW);JAP.concat(\"\\\"\");Wifi.println(JAP);if (Wifi.find(\"OK\")){};};\n",
+		"work":"ConnectAPNoCheck((String){0}, (String){1});\n",
+		"loop":""
+		}
+		],
+		
+		["-"],
+		
 		["b", 
-		"Upload to thingspeak.com|Write API %s |Content %s",
+		"[With Validation]Upload to thingspeak.com|Write API %s |Content %s",
 		"Upload_freeform",
 		"Write API",
 		"field1=",
@@ -101,8 +106,29 @@
 		}
 		],
 		
+		["w", 
+		"Upload to thingspeak.com|Write API %s |field1 %s |field2 %s |field3 %s |field4 %s |field5 %s |field6 %s |field7 %s |field8 %s",
+		"Upload_fixed",
+		"Write API",
+		"0",
+		"0",
+		"0",
+		"0",
+		"0",
+		"0",
+		"0",
+		"0",
+		{
+		"setup":"Wifi.begin(9600);\n",
+		"inc":"#include <String.h>\n",
+		"def":"bool upLoadToThingspeakFixed(const String& F1, const String& F2, const String& F3, const String& F4, const String& F5, const String& F6, const String& F7, const String& F8){Wifi.setTimeout(5000);while(Wifi.available()){delayMicroseconds(500);Wifi.read();}String Request;Request.reserve(16);String SendOut;SendOut.reserve(150);SendOut= F(\"GET https://api.thingspeak.com/update?api_key=\");SendOut.concat(F({0}));SendOut.concat(F(\"&field1=\"));SendOut.concat(F1);SendOut.concat(F(\"&field2=\"));SendOut.concat(F2);SendOut.concat(F(\"&field3=\"));SendOut.concat(F3);SendOut.concat(F(\"&field4=\"));SendOut.concat(F4);SendOut.concat(F(\"&field5=\"));SendOut.concat(F5);SendOut.concat(F(\"&field6=\"));SendOut.concat(F6);SendOut.concat(F(\"&field7=\"));SendOut.concat(F7);SendOut.concat(F(\"&field8=\"));SendOut.concat(F8);;Request=F(\"AT+CIPSEND=0,\");Request.concat(SendOut.length()+2);Wifi.println(F(\"AT+CIPSTART=0,\\\"TCP\\\",\\\"api.thingspeak.com\\\",80\"));if(Wifi.find(\"OK\\r\\n\")){Wifi.println(Request);if(Wifi.find(\">\")){Wifi.println(SendOut);if (Wifi.find(\"+IPD\"))return true;else {Wifi.println(F(\"AT+CIPCLOSE=0\"));return false;}}else{Wifi.println(F(\"AT+CIPCLOSE=0\"));return false;}}else return false;};\n",
+		"work":"upLoadToThingspeakFixed((String){1},(String){2},(String){3},(String){4},(String){5},(String){6},(String){7},(String){8});\n",
+		"loop":""
+		}
+		],
+		
 		["r", 
-		"Get feed from thingspeak.com|Read API %s |Channel ID %s |Field %d.fields ",
+		"Get feed from thingspeak.com|Read API %s |Channel ID %s |Field %d.fields",
 		"Get_last_feed_from_thingspeak",
 		"Read API",
 		"ID",
@@ -116,8 +142,10 @@
 		}
 		],
 		
+		["-"],
+		
 		["b", 
-		"Trigger an event to maker.ifttt.com|Event name %s |API %s |Content %s",
+		"[With validation]Trigger an event to maker.ifttt.com|Event name %s |API %s |Content %s",
 		"Trigger_ifttt_freeform",
 		"EventName",
 		"API",
@@ -130,6 +158,25 @@
 		"loop":""
 		}
 		],
+		
+		["w", 
+		"Trigger an event to maker.ifttt.com|Event name %s |API %s |Value1 %s |Value2 %s |Value3 %s",
+		"Trigger_ifttt_freeform",
+		"EventName",
+		"API",
+		"0",
+		"0",
+		"0",
+		{
+		"setup":"Wifi.begin(9600);\n",
+		"inc":"#include <String.h>\n",
+		"def":"bool upLoadToIftttFixed(const String& EVENTNAME,const String& API,const String& V1,const String& V2,const String& V3,){Wifi.setTimeout(5000);while(Wifi.available()){Wifi.read();}String Request;Request.reserve(16);String SendOut;SendOut.reserve(150);SendOut= F(\"GET https://maker.ifttt.com/trigger/\");SendOut.concat(EVENTNAME);SendOut.concat(F(\"/with/key/\"));SendOut.concat(API);SendOut.concat(F(\"?value1=\"));SendOut.concat(V1);SendOut.concat(F(\"&value2=\"));SendOut.concat(V2);SendOut.concat(F(\"&value3=\"));SendOut.concat(V3);Request=F(\"AT+CIPSEND=1,\");Request.concat(SendOut.length()+2);Wifi.println(F(\"AT+CIPSTART=1,\\\"TCP\\\",\\\"maker.ifttt.com\\\",80\"));if (Wifi.find(\"OK\\r\\n\")){Wifi.println(Request);if (Wifi.find(\">\")){Wifi.println(SendOut);if (Wifi.find(\"Congratulations\"))return true;else {Wifi.println(F(\"AT+CIPCLOSE=1\"));return false;};}else{Wifi.println(F(\"AT+CIPCLOSE=1\"));return false;}}else return false;};\n",
+		"work":"upLoadToIftttFixed((String){0},(String){1},(String){2},(String){3},(String){4})",
+		"loop":""
+		}
+		],
+		
+		["-"],
 		
 		["r", 
 		"Get Weather Info from OpenWeatherMap|API %s |City ID %s |Type %m.types",
@@ -145,6 +192,21 @@
 		"loop":""
 		}
 		]
+		
+		["-"],
+		
+		["w", 
+		"WiFi.write %s",
+		"writeLine",
+		"AT",
+		{
+		"setup":"Wifi.begin(9600);\n",
+		"inc":"",
+		"def":"",
+		"work":"Wifi.println({0});\n",
+		"loop":""
+		}
+		],
 		
 	],
 	"menus": {
@@ -170,12 +232,15 @@
 	},
 	"translators":{
 		"zh_TW":{
-			"Attach WiFi Module RX@%s TX@%s":"連接Wifi模組 RX端口 %s |TX端口 %s",
+			"Attach WiFi Module RX@%s TX@%s":"[其他]連接Wifi模組 RX端口 %s |TX端口 %s",
 			"WiFi.write %s":"發送序列信息(AT指令) %s",
+			"[With Check]Connect AP|SSID %s |PW %s":"[帶檢查]連接到AP|SSID %s |密碼 %s",
 			"Connect AP|SSID %s |PW %s":"連接到AP|SSID %s |密碼 %s",
-			"Upload to thingspeak.com|Write API %s |Content %s":"上傳資料到thingspeak.com|Write API %s |內容 %s",
-			"Get feed from thingspeak.com|Read API %s |Channel ID %s |Field %d.fields ":"從thingspeak.com取得資料|Write API %s |頻道ID %s |欄位 %d.fields ",
-			"Trigger an event to maker.ifttt.com|Event name %s |API %s |Content %s":"觸發maker.ifttt.com事件|事件名稱 %s |API %s |內容 %s",
+			"[With Validation]Upload to thingspeak.com|Write API %s |Content %s":"[帶檢查]上傳資料到thingspeak.com|Write API %s |內容 %s",
+			"Upload to thingspeak.com|Write API %s |field1 %s |field2 %s |field3 %s |field4 %s |field5 %s |field6 %s |field7 %s |field8 %s":"上傳資料到thingspeak.com|Write API %s |field1 %s |field2 %s |field3 %s |field4 %s |field5 %s |field6 %s |field7 %s |field8 %s",
+			"Get feed from thingspeak.com|Read API %s |Channel ID %s |Field %d.fields":"從thingspeak.com取得資料|Write API %s |頻道ID %s |欄位 %d.fields",
+			"[With validation]Trigger an event to maker.ifttt.com|Event name %s |API %s |Content %s":"[帶檢查]觸發maker.ifttt.com事件|事件名稱 %s |API %s |內容 %s",
+			"Trigger an event to maker.ifttt.com|Event name %s |API %s |Value1 %s |Value2 %s |Value3 %s":"觸發maker.ifttt.com事件|事件名稱 %s |API %s |value1 %s |value2 %s |value3 %s",
 			"Get Weather Info from OpenWeatherMap|API %s |City ID %s |Type %m.types":"從OpenWeatherMap讀取資料|API %s |城市代碼 %s |類型 %m.types",
 			"[mCore]Attach WiFi Module RX@%m.mCoreRX TX@%m.mCoreTX":"[mBot]連接Wifi模組 RX端口%m.mCoreRX TX端口%m.mCoreTX (上至下為Port1-4)",
 			"[Orion]Attach WiFi Module RX@%m.OrionRX TX@%m.OrionTX":"[Orion]連接Wifi模組 RX端口%m.OrionRX TX端口%m.OrionTX (上至下為Port3,4,6)",
