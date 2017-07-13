@@ -1,10 +1,10 @@
 {	"extensionName": "IoT",
 	"description":"IoT extension for Me WIFI Module",
-	"version":"1.0",
+	"version":"1.1",
 	"author":"Just A HK Guy(justahkguy@gmail.com)",
 	"homepage":"https://github.com/wandererinhk/IoT-extension-for-mBlock",
 	"extensionPort": 0,
-	"extensionHost": "127.0.0.1",
+	"extensionHost":"127.0.0.1",
 	"sort":0,
 	"blockSpecs": [
 		
@@ -13,6 +13,45 @@
 		"AttachWifi",
 		"12",
 		"11",
+		{"setup":"Wifi.begin(9600);\n",
+		"inc":"",
+		"def":"SoftwareSerial Wifi({0},{1});",
+		"work":"",
+		"loop":""
+		}
+		],
+		
+		["w", 
+		"[mCore]Attach WiFi Module RX@%m.mCoreRX TX@%m.mCoreTX",
+		"AttachWifi",
+		"12",
+		"11",
+		{"setup":"Wifi.begin(9600);\n",
+		"inc":"",
+		"def":"SoftwareSerial Wifi({0},{1});",
+		"work":"",
+		"loop":""
+		}
+		],
+		
+		["w", 
+		"[Orion]Attach WiFi Module RX@%m.OrionRX TX@%m.OrionTX",
+		"AttachWifi",
+		"13",
+		"12",
+		{"setup":"Wifi.begin(9600);\n",
+		"inc":"",
+		"def":"SoftwareSerial Wifi({0},{1});",
+		"work":"",
+		"loop":""
+		}
+		],
+		
+		["w", 
+		"[Auriga]Attach WiFi Module RX@%m.AurigaRX TX@%m.AurigaTX",
+		"AttachWifi",
+		"69",
+		"64",
 		{"setup":"Wifi.begin(9600);\n",
 		"inc":"",
 		"def":"SoftwareSerial Wifi({0},{1});",
@@ -36,9 +75,9 @@
 		
 		["b", 
 		"Connect AP|SSID %s |PW %s",
-		"Connect AP",
+		"Connect_AP",
 		"SSID",
-		"Password",
+		"PW",
 		{
 		"setup":"Wifi.begin(9600);\n",
 		"inc":"#include <String.h>\n",
@@ -49,15 +88,30 @@
 		],
 		
 		["b", 
-		"Upload to thingspeak.com|API %s |Content %s",
+		"Upload to thingspeak.com|Write API %s |Content %s",
 		"Upload_freeform",
-		"API",
+		"Write API",
 		"field1=",
 		{
 		"setup":"Wifi.begin(9600);\n",
 		"inc":"#include <String.h>\n",
 		"def":"bool upLoadToThingspeak(const String& CONTENT){Wifi.setTimeout(5000);while(Wifi.available()){delayMicroseconds(500);Wifi.read();}String Request;Request.reserve(16);String SendOut;SendOut.reserve(150);SendOut= F(\"GET https://api.thingspeak.com/update?api_key=\");SendOut.concat(F({0}));SendOut.concat(F(\"&\"));SendOut.concat(CONTENT);Request=F(\"AT+CIPSEND=0,\");Request.concat(SendOut.length()+2);Wifi.println(F(\"AT+CIPSTART=0,\\\"TCP\\\",\\\"api.thingspeak.com\\\",80\"));if(Wifi.find(\"OK\\r\\n\")){Wifi.println(Request);if(Wifi.find(\">\")){Wifi.println(SendOut);if (Wifi.find(\"+IPD\"))return true;else {Wifi.println(F(\"AT+CIPCLOSE=0\"));return false;}}else{Wifi.println(F(\"AT+CIPCLOSE=0\"));return false;}}else return false;};\n",
 		"work":"upLoadToThingspeak((String){1})",
+		"loop":""
+		}
+		],
+		
+		["r", 
+		"Get feed from thingspeak.com|Read API %s |Channel ID %s |Field %d.fields ",
+		"Get_last_feed_from_thingspeak",
+		"Read API",
+		"ID",
+		"field1",
+		{
+		"setup":"Wifi.begin(9600);\nSerial.begin(9600);\n",
+		"inc":"#include <String.h>\n",
+		"def":"float getFieldFromThingspeak(const String& API, const String& CHANNEL, const int& FIELD) {Wifi.setTimeout(5000);String Request;Request.reserve(16);String Read;Read.reserve(250);String SendOut;SendOut.reserve(90); String TARGET;switch (FIELD) {case 0:TARGET = F(\"entry_id\\\":\");break;default:TARGET = F(\"field\");TARGET.concat(FIELD);TARGET.concat(\"\\\":\\\"\");break;}SendOut = F(\"GET https://api.thingspeak.com/channels/\");SendOut.concat(CHANNEL);SendOut.concat(F(\"/feeds/last.txt?api_key=\"));SendOut.concat(API);Request = F(\"AT+CIPSEND=0,\");Request.concat((String)(SendOut.length() + 2));Wifi.println(F(\"AT+CIPSTART=0,\\\"TCP\\\",\\\"api.thingspeak.com\\\",80\"));delay(1000);if (Wifi.find(\"OK\\r\\n\")) {Wifi.println(Request);if (Wifi.find(\">\")) {Wifi.println(SendOut);if (Wifi.find(\"SEND OK\")) {Read = Wifi.readString();Read.remove(0, Read.indexOf(TARGET) + TARGET.length());Read.remove(Read.indexOf(\"\\\"\"));return Read.toFloat();} else {Wifi.println(F(\"AT+CIPCLOSE=0\"));return 9999;}} else {Wifi.println(F(\"AT+CIPCLOSE=0\"));return 9999;}}};\n",
+		"work":"getFieldFromThingspeak((String){0},(String){1},(int){2})",
 		"loop":""
 		}
 		],
@@ -78,11 +132,11 @@
 		],
 		
 		["r", 
-		"Get Weather Info from OpenWeatherMap|API %s |City ID %s |Type %s",
+		"Get Weather Info from OpenWeatherMap|API %s |City ID %s |Type %m.types",
 		"Get_OpenWeatherMap",
 		"API",
 		"1819729",
-		"temp/pressure/humidity/visibility",
+		"temp",
 		{
 		"setup":"Wifi.begin(9600);\nSerial.begin(9600);\n",
 		"inc":"#include <String.h>\n",
@@ -90,20 +144,42 @@
 		"work":"getWeather((String){0},(long){1},(String){2})",
 		"loop":""
 		}
-		],
-		
+		]
 		
 	],
 	"menus": {
+		"fields": ["field1","field2","field3","field4","field5","field6","field7","field8","ID"],
+		"types": ["temp","pressure","humidity","visibility"],
+		"mCoreRX":["12","10","17","15"],
+		"mCoreTX":["11","9","16","14"],
+		"OrionRX":["13","2","17"],
+		"OrionTX":["12","8","16"],
+		"AurigaRX":["69","68","67","66","65"],
+		"AurigaTX":["64","63","62","61","60"]
+	},
+	"values": {
+		"ID":0,
+		"field1": 1,
+		"field2": 2,
+		"field3": 3,
+		"field4": 4,
+		"field5": 5,
+		"field6": 6,
+		"field7": 7,
+		"field8": 8
 	},
 	"translators":{
 		"zh_TW":{
 			"Attach WiFi Module RX@%s TX@%s":"連接Wifi模組 RX端口 %s |TX端口 %s",
 			"WiFi.write %s":"發送序列信息(AT指令) %s",
 			"Connect AP|SSID %s |PW %s":"連接到AP|SSID %s |密碼 %s",
-			"Upload to thingspeak.com|API %s |Content %s":"上傳資料到thingspeak.com|API %s |內容 %s",
+			"Upload to thingspeak.com|Write API %s |Content %s":"上傳資料到thingspeak.com|Write API %s |內容 %s",
+			"Get feed from thingspeak.com|Read API %s |Channel ID %s |Field %d.fields ":"從thingspeak.com取得資料|Write API %s |頻道ID %s |欄位 %d.fields ",
 			"Trigger an event to maker.ifttt.com|Event name %s |API %s |Content %s":"觸發maker.ifttt.com事件|事件名稱 %s |API %s |內容 %s",
-			"Get Weather Info from OpenWeatherMap|API %s |City ID %s |Type %s":"從OpenWeatherMap讀取資料|API %s |城市代碼 %s |類型 %s"
+			"Get Weather Info from OpenWeatherMap|API %s |City ID %s |Type %m.types":"從OpenWeatherMap讀取資料|API %s |城市代碼 %s |類型 %m.types",
+			"[mCore]Attach WiFi Module RX@%m.mCoreRX TX@%m.mCoreTX":"[mBot]連接Wifi模組 RX端口%m.mCoreRX TX端口%m.mCoreTX (上至下為Port1-4)",
+			"[Orion]Attach WiFi Module RX@%m.OrionRX TX@%m.OrionTX":"[Orion]連接Wifi模組 RX端口%m.OrionRX TX端口%m.OrionTX (上至下為Port3,4,6)",
+			"[Auriga]Attach WiFi Module RX@%m.AurigaRX TX@%m.AurigaTX":"[Auriga]連接Wifi模組 RX端口%m.AurigaRX TX端口%m.AurigaTX (上至下為Port6-10)"
 		}
 	}
 }
