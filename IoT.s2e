@@ -15,7 +15,7 @@
 		"11",
 		{"setup":"Wifi.begin(9600);\n",
 		"inc":"",
-		"def":"SoftwareSerial Wifi({0},{1});",
+		"def":"SoftwareSerial Wifi({0},{1});\n",
 		"work":"",
 		"loop":""
 		}
@@ -28,7 +28,7 @@
 		"12",
 		{"setup":"Wifi.begin(9600);\n",
 		"inc":"",
-		"def":"SoftwareSerial Wifi({0},{1});",
+		"def":"SoftwareSerial Wifi({0},{1});\n",
 		"work":"",
 		"loop":""
 		}
@@ -41,7 +41,7 @@
 		"64",
 		{"setup":"Wifi.begin(9600);\n",
 		"inc":"",
-		"def":"SoftwareSerial Wifi({0},{1});",
+		"def":"SoftwareSerial Wifi({0},{1});\n",
 		"work":"",
 		"loop":""
 		}
@@ -54,7 +54,7 @@
 		"11",
 		{"setup":"Wifi.begin(9600);\n",
 		"inc":"",
-		"def":"SoftwareSerial Wifi({0},{1});",
+		"def":"SoftwareSerial Wifi({0},{1});\n",
 		"work":"",
 		"loop":""
 		}
@@ -171,7 +171,7 @@
 		"setup":"Wifi.begin(9600);\n",
 		"inc":"#include <String.h>\n",
 		"def":"bool upLoadToIftttFixed(const String& EVENTNAME,const String& API,const String& V1,const String& V2,const String& V3,){Wifi.setTimeout(5000);while(Wifi.available()){Wifi.read();}String Request;Request.reserve(16);String SendOut;SendOut.reserve(150);SendOut= F(\"GET https://maker.ifttt.com/trigger/\");SendOut.concat(EVENTNAME);SendOut.concat(F(\"/with/key/\"));SendOut.concat(API);SendOut.concat(F(\"?value1=\"));SendOut.concat(V1);SendOut.concat(F(\"&value2=\"));SendOut.concat(V2);SendOut.concat(F(\"&value3=\"));SendOut.concat(V3);Request=F(\"AT+CIPSEND=1,\");Request.concat(SendOut.length()+2);Wifi.println(F(\"AT+CIPSTART=1,\\\"TCP\\\",\\\"maker.ifttt.com\\\",80\"));if (Wifi.find(\"OK\\r\\n\")){Wifi.println(Request);if (Wifi.find(\">\")){Wifi.println(SendOut);if (Wifi.find(\"Congratulations\"))return true;else {Wifi.println(F(\"AT+CIPCLOSE=1\"));return false;};}else{Wifi.println(F(\"AT+CIPCLOSE=1\"));return false;}}else return false;};\n",
-		"work":"upLoadToIftttFixed((String){0},(String){1},(String){2},(String){3},(String){4})",
+		"work":"upLoadToIftttFixed((String){0},(String){1},(String){2},(String){3},(String){4});\n",
 		"loop":""
 		}
 		],
@@ -191,7 +191,7 @@
 		"work":"getWeather((String){0},(long){1},(String){2})",
 		"loop":""
 		}
-		]
+		],
 		
 		["-"],
 		
