@@ -5,6 +5,7 @@
 	"homepage":"https://github.com/wandererinhk/IoT-extension-for-mBlock",
 	"extensionPort": 0,
 	"extensionHost":"127.0.0.1",
+	"javascriptURL":"js/IoT.js"
 	"sort":0,
 	"blockSpecs": [
 			
